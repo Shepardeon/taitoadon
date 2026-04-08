@@ -60,13 +60,15 @@ const inputName = ref<string>();
 const inputRoom = ref<string>();
 
 async function onCreateRoom() {
-  // TODO: Redirect to game lobby + login to room
   doLogin();
   await createRoomAsync(username.value ?? "");
+  router$.push("/room");
 }
 
-function onJoinRoom() {
+async function onJoinRoom() {
   doLogin();
+  await joinRoomAsync(inputRoom.value ?? "", username.value ?? "");
+  router$.push("/room");
 }
 
 function doLogin() {
