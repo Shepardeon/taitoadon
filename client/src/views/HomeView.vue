@@ -32,9 +32,9 @@
 
               <a @click="onJoinRoom" class="btn"> Rejoindre une partie </a>
 
-              <a v-if="isLogged" class="btn btn-secondary" @click="logout"
-                >Retour</a
-              >
+              <a v-if="isLogged" class="btn btn-secondary" @click="logout">
+                Retour
+              </a>
             </div>
           </form>
         </div>
@@ -46,18 +46,25 @@
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user.store";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { getRandomInt } from "../utils/random.utils";
 import { useRouter } from "vue-router";
 import { useRoomStore } from "../stores/room.store";
 
 const { username, isLogged } = storeToRefs(useUserStore());
+const { isConnected } = storeToRefs(useRoomStore());
 const { login, logout } = useUserStore();
-const { createRoomAsync, joinRoomAsync } = useRoomStore();
+const { createRoomAsync, joinRoomAsync, leaveRoom } = useRoomStore();
 const router$ = useRouter();
 
 const inputName = ref<string>();
 const inputRoom = ref<string>();
+
+onMounted(() => {
+  if (isConnected.value) {
+    leaveRoom();
+  }
+});
 
 async function onCreateRoom() {
   doLogin();
@@ -67,8 +74,11 @@ async function onCreateRoom() {
 
 async function onJoinRoom() {
   doLogin();
-  await joinRoomAsync(inputRoom.value ?? "", username.value ?? "");
-  router$.push("/room");
+
+  if (inputRoom.value) {
+    await joinRoomAsync(inputRoom.value ?? "", username.value ?? "");
+    router$.push("/room");
+  }
 }
 
 function doLogin() {
