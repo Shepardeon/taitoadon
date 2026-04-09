@@ -1,11 +1,11 @@
 import { Schema, MapSchema, type, ArraySchema } from "@colyseus/schema";
-import { Client, Messages, Room } from "colyseus";
+import { Client, Room } from "colyseus";
 
 export class Player extends Schema {
   @type("string") public sessionId: string;
   @type("string") public name: string;
   @type("int8") public lives: number;
-  @type({ array: String }) public cards = new ArraySchema<string>();
+  @type(["string"]) public cards = new ArraySchema<string>();
 }
 
 export class GameRoomState extends Schema {
@@ -25,7 +25,6 @@ export class GameRoom extends Room {
   messages = {
     test: (client: Client, payload: any) => {
       const player = this.state.players.get(client.sessionId);
-      console.log("Yup. ", player.cards);
       player.cards.push("Ouais on sait pas");
     },
   };

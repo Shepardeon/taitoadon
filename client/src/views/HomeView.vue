@@ -52,23 +52,23 @@ import { useRouter } from "vue-router";
 import { useRoomStore } from "../stores/room.store";
 
 const { username, isLogged } = storeToRefs(useUserStore());
-const { isConnected } = storeToRefs(useRoomStore());
+const { initialized } = storeToRefs(useRoomStore());
 const { login, logout } = useUserStore();
-const { createRoomAsync, joinRoomAsync, leaveRoom } = useRoomStore();
+const { createRoom, joinRoom, leave } = useRoomStore();
 const router$ = useRouter();
 
 const inputName = ref<string>();
 const inputRoom = ref<string>();
 
 onMounted(() => {
-  if (isConnected.value) {
-    leaveRoom();
+  if (initialized.value) {
+    leave();
   }
 });
 
 async function onCreateRoom() {
   doLogin();
-  await createRoomAsync(username.value ?? "");
+  await createRoom(username.value ?? "");
   router$.push("/room");
 }
 
@@ -76,7 +76,7 @@ async function onJoinRoom() {
   doLogin();
 
   if (inputRoom.value) {
-    await joinRoomAsync(inputRoom.value ?? "", username.value ?? "");
+    await joinRoom(inputRoom.value ?? "", username.value ?? "");
     router$.push("/room");
   }
 }
