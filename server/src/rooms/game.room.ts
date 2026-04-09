@@ -1,5 +1,5 @@
 import { Schema, MapSchema, type, ArraySchema } from "@colyseus/schema";
-import { Client, Room } from "colyseus";
+import { Client, Messages, Room } from "colyseus";
 
 export class Player extends Schema {
   @type("string") public sessionId: string;
@@ -21,6 +21,14 @@ export class GameRoomState extends Schema {
 export class GameRoom extends Room {
   maxClients = 20;
   state = new GameRoomState();
+
+  messages = {
+    test: (client: Client, payload: any) => {
+      const player = this.state.players.get(client.sessionId);
+      console.log("Yup. ", player.cards);
+      player.cards.push("Ouais on sait pas");
+    },
+  };
 
   onCreate(options: any): void | Promise<any> {
     this.state.roundState = "waiting_for_players";
