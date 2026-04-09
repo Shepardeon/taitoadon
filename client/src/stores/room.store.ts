@@ -93,7 +93,7 @@ export const useRoomStore = defineStore("room", () => {
 
     // LISTEN COLLECTION
     $(room.value.state).players.onAdd((player, id) => {
-      players[id] = serializePlayer(player, true);
+      players[id] = serializePlayer(player);
 
       // LISTEN FIELD CHANGE
       $(player).onChange(() => {
@@ -136,7 +136,7 @@ export const useRoomStore = defineStore("room", () => {
   /**
    * HELPERS
    */
-  function serializePlayer(player: any, isInit = false): Player {
+  function serializePlayer(player: any): Player {
     return {
       sessionId: player.sessionId,
       name: player.name,
