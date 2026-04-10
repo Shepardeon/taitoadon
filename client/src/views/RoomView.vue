@@ -1,29 +1,23 @@
 <template>
-  <div v-if="room.initialized" class="drawer lg:drawer-open">
-    <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col items-center justify-center">
-      <!-- Page content here -->
-      <div class="text-xl text-bold">Room: {{ room.sessionId }}</div>
-      {{ room.players }}
+  <SidebarPage>
+    <div class="text-xl text-bold">Room: {{ room.sessionId }}</div>
+    {{ room.players }}
 
-      <a class="btn" @click="onTestSend">test</a>
+    <a class="btn" @click="onTestSend">test</a>
 
-      <label for="my-drawer-3" class="btn drawer-button lg:hidden">
-        Open drawer
-      </label>
-    </div>
-    <div class="drawer-side">
-      <ul class="menu bg-base-200 min-h-full w-80 p-4">
-        <!-- Sidebar content here -->
+    <template #side>
+      <div>Liste des joueurs connectés :</div>
+      <ul>
         <li v-for="(player, id) in room.players" :key="id">
           {{ player.name }}
         </li>
       </ul>
-    </div>
-  </div>
+    </template>
+  </SidebarPage>
 </template>
 
 <script lang="ts" setup>
+import SidebarPage from "../components/SidebarPage.vue";
 import { useRoomStore } from "../stores/room.store";
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
