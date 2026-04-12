@@ -54,7 +54,9 @@ export class GameRoom extends Room {
       if (this.state.roundState !== "propose_phase") return;
 
       const player = this.state.players.get(client.sessionId);
+      const idx = player.cards.findIndex((card) => card === payload.response);
       player.response = payload.response;
+      player.cards.splice(idx, 1);
       player.isReady = true;
 
       for (let [_, arrPlayer] of this.state.players) {

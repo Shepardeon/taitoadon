@@ -149,7 +149,7 @@ export const useRoomStore = defineStore("room", () => {
       sessionId: player.sessionId,
       name: player.name,
       lives: player.lives,
-      cards: [],
+      cards: [...player.cards],
       isHost: player.isHost,
       isReady: player.isReady,
       response: player.response,
