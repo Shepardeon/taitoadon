@@ -8,6 +8,8 @@
 
     <div>This me : {{ room.me }}</div>
 
+    <div>State : {{ room.state }}</div>
+
     <template #side>
       <div>
         <div class="side-title text-bold">Liste des joueurs connectés :</div>

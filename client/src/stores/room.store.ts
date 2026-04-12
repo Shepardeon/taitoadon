@@ -1,7 +1,7 @@
 import { getStateCallbacks, Room } from "@colyseus/sdk";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
-import { Player } from "../models/game.model";
+import { GameRoom, Player } from "../models/game.model";
 import { getClient } from "../services/colyseus.client";
 
 export const useRoomStore = defineStore("room", () => {
@@ -12,6 +12,7 @@ export const useRoomStore = defineStore("room", () => {
   const sessionId = ref<string>();
   const initialized = ref(false);
 
+  const state = ref<GameRoom>();
   const players = reactive<{ [sessionId: string]: Player }>({});
   const me = computed(() =>
     room.value?.sessionId ? players[room.value?.sessionId] : undefined,
@@ -117,6 +118,10 @@ export const useRoomStore = defineStore("room", () => {
       delete players[id];
     });
 
+    $(room.value.state).onChange(() => {
+      state.value = serializeState(room.value?.state);
+    });
+
     // ex synchro valeur simple
     // $(room.value.state).listen("roundState", (value, previous) => {
     //   roundState.value = value;
@@ -151,6 +156,15 @@ export const useRoomStore = defineStore("room", () => {
     };
   }
 
+  function serializeState(state: GameRoom): GameRoom {
+    return {
+      players: {}, // unused
+      roundMasterId: state.roundMasterId,
+      proposition: state.proposition,
+      roundState: state.roundState,
+    };
+  }
+
   function reset() {
     room.value = undefined;
     sessionId.value = undefined;
@@ -166,6 +180,7 @@ export const useRoomStore = defineStore("room", () => {
   return {
     // State
     room,
+    state,
     sessionId,
     initialized,
     players,
