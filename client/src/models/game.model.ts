@@ -14,3 +14,8 @@ export interface GameRoom {
   proposition: string;
   roundState: "waiting_for_players" | "propose_phase" | "choice_phase";
 }
+
+export interface PlayerResponse {
+  playerId: string;
+  response: string;
+}

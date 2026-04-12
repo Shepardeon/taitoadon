@@ -7,7 +7,23 @@
     </template>
 
     <div class="flex h-full w-full items-center justify-center">
-      <div>
+      <div class="lg:max-w-200 w-full">
+        <div class="text-xl text-bold text-center mb-5">
+          <div v-if="isProposePhase">
+            <span v-if="isRoundMaster">
+              Les joueurs choisissent une réponse...
+            </span>
+            <span v-else>Choisissez une réponse à l'intervention</span>
+          </div>
+
+          <div v-if="isChoicePhase">
+            <span v-if="isRoundMaster">
+              Choisissez la réponse la moins drôle !
+            </span>
+            <span v-else>Le chef du round choisi un message...</span>
+          </div>
+        </div>
+
         <div>
           {{ room.state?.roundState }}
         </div>
@@ -17,9 +33,19 @@
         </div>
 
         <div v-if="isProposePhase">
-          <div class="text-xl text-bold">Prochaine proposition :</div>
+          <div class="text-xl text-bold">Prochaine intervention :</div>
           <div>
             {{ room.state?.proposition }}
+          </div>
+        </div>
+
+        <div v-if="isChoicePhase">
+          <div class="scrollable-content">
+            <ChatList
+              :proposition="room.state?.proposition ?? ''"
+              :responses="playerResponses"
+              :is-round-master="isRoundMaster"
+            />
           </div>
         </div>
       </div>
@@ -69,9 +95,11 @@
 import SidebarPage from "../components/SidebarPage.vue";
 import PlayerList from "../components/PlayerList/PlayerList.vue";
 import ResponseCard from "../components/ResponseCard.vue";
+import ChatList from "../components/ChatList/ChatList.vue";
 import { useRoomStore } from "../stores/room.store";
 import { useRouter } from "vue-router";
 import { computed, onMounted } from "vue";
+import { PlayerResponse } from "../models/game.model";
 
 const room = useRoomStore();
 const router$ = useRouter();
@@ -87,6 +115,18 @@ const isProposePhase = computed(
   () => room.state?.roundState === "propose_phase",
 );
 const isChoicePhase = computed(() => room.state?.roundState === "choice_phase");
+
+const playerResponses = computed(() =>
+  Object.values(room.players)
+    .map(
+      (player) =>
+        ({
+          playerId: player.sessionId,
+          response: player.response,
+        }) as PlayerResponse,
+    )
+    .filter((r) => r.playerId !== room.state?.roundMasterId),
+);
 
 onMounted(() => {
   if (!room.initialized) {
@@ -112,5 +152,10 @@ function onChooseResponse(response: string) {
 .side-title {
   margin-bottom: 1.5em;
   border-bottom: 1px solid;
+}
+
+.scrollable-content {
+  height: 80vh;
+  overflow-y: auto;
 }
 </style>
