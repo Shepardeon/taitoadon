@@ -5,8 +5,10 @@
 
     <a class="btn" @click="onTestSend">test</a>
 
+    This me : {{ room.me }}
+
     <template #side>
-      <div>Liste des joueurs connectés :</div>
+      <div class="text-bold">Liste des joueurs connectés :</div>
       <ul>
         <li v-for="(player, id) in room.players" :key="id">
           {{ player.name }}

@@ -2,6 +2,8 @@ import { Schema, MapSchema, type, ArraySchema } from "@colyseus/schema";
 import { AuthContext, Client, Room } from "colyseus";
 import { CardServices } from "../services/card.service";
 
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 export class Player extends Schema {
   @type("string") public sessionId: string;
   @type("string") public name: string;
@@ -23,6 +25,8 @@ export class GameRoomState extends Schema {
 }
 
 export class GameRoom extends Room {
+  private readonly _roomChanel = "GameRoomChanel";
+
   maxClients = 20;
   state = new GameRoomState();
   cardService = new CardServices();
@@ -40,9 +44,7 @@ export class GameRoom extends Room {
         player.isReady = false;
       });
 
-      const randomPlayer = this.state.players["~getByIndex"](
-        Math.floor(Math.random() * this.state.players.size),
-      );
+      const randomPlayer = this._getRandomPlayer();
 
       this.state.roundMasterId = randomPlayer.sessionId;
       randomPlayer.isReady = true;
@@ -88,7 +90,8 @@ export class GameRoom extends Room {
     },
   };
 
-  onCreate(options: any): void | Promise<any> {
+  async onCreate(options: any): Promise<any> {
+    this.roomId = await this._generateRoomId();
     this.state.roundState = "waiting_for_players";
   }
 
@@ -109,7 +112,7 @@ export class GameRoom extends Room {
     this.state.players.delete(player.sessionId);
 
     if (player.isHost && this.state.players.size) {
-      this.state.players["~getByIndex"](0).isHost = true;
+      this._getRandomPlayer().isHost = true;
     }
 
     console.log(`${player.name}(${client.sessionId}) left!`);
@@ -117,9 +120,37 @@ export class GameRoom extends Room {
 
   onDispose(): void | Promise<any> {
     console.log("room", this.roomId, "disposing...");
+    this.presence.srem(this._roomChanel, this.roomId);
   }
 
   onAuth(client: Client, options: any, context: AuthContext) {
     return this.state.roundState === "waiting_for_players";
+  }
+
+  private async _generateRoomId(): Promise<string> {
+    const currentIds = await this.presence.smembers(this._roomChanel);
+
+    let id: string;
+    do {
+      id = this._generateRoomIdSingle();
+    } while (currentIds.includes(id));
+
+    await this.presence.sadd(this._roomChanel, id);
+    return id;
+  }
+
+  private _generateRoomIdSingle(): string {
+    let result = "";
+
+    for (let i = 0; i < 5; i++) {
+      result += LETTERS.charAt(Math.floor(Math.random() * LETTERS.length));
+    }
+
+    return result;
+  }
+
+  private _getRandomPlayer(): Player {
+    let players = Array.from(this.state.players.values());
+    return players[Math.floor(Math.random() * players.length)];
   }
 }

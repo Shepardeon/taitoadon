@@ -1,6 +1,6 @@
 import { getStateCallbacks, Room } from "@colyseus/sdk";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { Player } from "../models/game.model";
 import { getClient } from "../services/colyseus.client";
 
@@ -13,6 +13,9 @@ export const useRoomStore = defineStore("room", () => {
   const initialized = ref(false);
 
   const players = reactive<{ [sessionId: string]: Player }>({});
+  const me = computed(() =>
+    room.value?.sessionId ? players[room.value?.sessionId] : undefined,
+  );
 
   /**
    * ACTIONS
@@ -166,6 +169,7 @@ export const useRoomStore = defineStore("room", () => {
     sessionId,
     initialized,
     players,
+    me,
 
     // Actions
     createRoom,
