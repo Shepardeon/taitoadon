@@ -3,6 +3,9 @@ export interface Player {
   name: string;
   lives: number;
   cards: string[];
+  isHost: boolean;
+  isReady: boolean;
+  response: string;
 }
 
 export interface GameRoom {

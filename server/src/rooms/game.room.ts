@@ -99,7 +99,7 @@ export class GameRoom extends Room {
     player.sessionId = client.sessionId;
     player.name = options.username;
     player.lives = 3;
-    player.isHost = this.state.players.size === 1;
+    player.isHost = this.state.players.size === 0;
 
     this.state.players.set(client.sessionId, player);
   }
@@ -112,7 +112,7 @@ export class GameRoom extends Room {
       this.state.players["~getByIndex"](0).isHost = true;
     }
 
-    console.log(`${player.name}(${client.sessionId}) joined!`);
+    console.log(`${player.name}(${client.sessionId}) left!`);
   }
 
   onDispose(): void | Promise<any> {
