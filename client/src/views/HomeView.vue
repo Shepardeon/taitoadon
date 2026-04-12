@@ -2,7 +2,7 @@
   <div class="flex flex-col">
     <div class="prose max-w-none text-center m-6 mb-20">
       <h1>TAITOADON!</h1>
-      <p>Un jeu made by ShepShep UwU</p>
+      <p>Un jeu made by ShepShep UwU - <i class="nf-fa-heart"></i></p>
     </div>
 
     <div class="flex justify-center w-full">
