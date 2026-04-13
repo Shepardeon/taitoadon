@@ -34,64 +34,80 @@ export class GameRoom extends Room {
 
   messages = {
     start: (_client: Client, _paylod: any) => {
-      if (this.state.roundState !== "waiting_for_players") return;
+      try {
+        if (this.state.roundState !== "waiting_for_players") return;
 
-      this.state.proposition = this.cardService.getRandomProposition();
-      this.state.roundState = "propose_phase";
+        this.state.proposition = this.cardService.getRandomProposition();
+        this.state.roundState = "propose_phase";
 
-      this.state.players.forEach((player) => {
-        player.cards.clear();
-        player.cards.push(...this.cardService.getRandomResponses(4));
-        player.lives = 3;
-        player.isReady = false;
-      });
+        this.state.players.forEach((player) => {
+          player.cards.clear();
+          player.cards.push(...this.cardService.getRandomResponses(4));
+          player.lives = 3;
+          player.isReady = false;
+        });
 
-      const randomPlayer = this._getRandomPlayer();
+        const randomPlayer = this._getRandomPlayer();
 
-      this.state.roundMasterId = randomPlayer.sessionId;
-      randomPlayer.isReady = true;
+        this.state.roundMasterId = randomPlayer.sessionId;
+        randomPlayer.isReady = true;
+      } catch (err) {
+        console.error(err);
+      }
     },
 
     respond: (client: Client, payload: any) => {
-      if (this.state.roundState !== "propose_phase") return;
+      try {
+        if (this.state.roundState !== "propose_phase") return;
 
-      const player = this.state.players.get(client.sessionId);
-      const idx = player.cards.findIndex((card) => card === payload.response);
-      player.response = payload.response;
-      player.cards.splice(idx, 1);
-      player.isReady = true;
+        const player = this.state.players.get(client.sessionId);
+        const idx = player.cards.findIndex((card) => card === payload.response);
+        player.response = payload.response;
+        player.cards.splice(idx, 1);
+        player.isReady = true;
 
-      for (let [_, arrPlayer] of this.state.players) {
-        if (!arrPlayer.isReady) return;
+        for (let [_, arrPlayer] of this.state.players) {
+          if (!arrPlayer.isReady) return;
+        }
+
+        this.state.roundState = "choice_phase";
+      } catch (err) {
+        console.error(err);
       }
-
-      this.state.roundState = "choice_phase";
     },
 
     choose: (_client: Client, payload: any) => {
-      if (this.state.roundState !== "choice_phase") return;
+      try {
+        if (this.state.roundState !== "choice_phase") return;
 
-      const looser = this.state.players.get(payload.sessionId);
-      looser.lives--;
+        const looser = this.state.players.get(payload.sessionId);
+        looser.lives--;
 
-      if (looser.lives <= 0) {
-        this.state.roundState = "waiting_for_players";
-        return;
+        if (looser.lives <= 0) {
+          this.state.roundState = "waiting_for_players";
+          return;
+        }
+
+        this.state.players.forEach((player) => (player.isReady = false));
+        looser.isReady = true;
+
+        this.state.roundMasterId = looser.sessionId;
+        this.state.lastLooserId = looser.sessionId;
+        this.state.proposition = this.cardService.getRandomProposition();
+        this.state.roundState = "propose_phase";
+      } catch (err) {
+        console.error(err);
       }
-
-      this.state.players.forEach((player) => (player.isReady = false));
-      looser.isReady = true;
-
-      this.state.roundMasterId = looser.sessionId;
-      this.state.lastLooserId = looser.sessionId;
-      this.state.proposition = this.cardService.getRandomProposition();
-      this.state.roundState = "propose_phase";
     },
 
     requestCards: (client: Client, _payload: any) => {
-      const player = this.state.players.get(client.sessionId);
-      player.cards.clear();
-      player.cards.push(...this.cardService.getRandomResponses(4));
+      try {
+        const player = this.state.players.get(client.sessionId);
+        player.cards.clear();
+        player.cards.push(...this.cardService.getRandomResponses(4));
+      } catch (err) {
+        console.error(err);
+      }
     },
   };
 
