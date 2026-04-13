@@ -7,7 +7,7 @@ const clientUrl = import.meta.env.PROD
 
 export function getClient() {
   if (!client) {
-    client = new Client(`${location.protocol}//${location.hostname}:2567`);
+    client = new Client(clientUrl);
   }
 
   return client;
