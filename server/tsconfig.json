@@ -15,7 +15,14 @@
     "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
+    "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@types/node/index.d.ts"
+  ]
 }
