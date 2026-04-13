@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div v-if="!isGameStarted" class="text-3xl text-bold">
+        <div v-if="!isGameStarted" class="text-3xl text-bold text-center">
           En attente du démarrage de la partie...
         </div>
 
