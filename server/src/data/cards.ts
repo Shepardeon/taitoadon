@@ -13,7 +13,7 @@ export const propositions = [
   "J’ai obéi à une envie...",
   "Je crois que j’ai un talent pour mettre les gens mal à l’aise.",
   "J'adore mimer des choses sexuelles.",
-  "Un whisky ? J'veux bien juste un doigt.",
+  "Un whisky ? Juste un doigt alors.",
   "Il y a ici quelqu'un qui ne m'aime pas.",
   "Dis moi que t'es là et que t'écoutes.",
   "Pour ce soir, j'ai prévu des menottes.",
@@ -74,6 +74,8 @@ export const propositions = [
   "Hier, j'ai gôuté quelque chose de salé.",
   "Oups, j'ai glissé",
   "Je suis une chienne, je mange dans la gamelle !",
+  "Je pense que je ferai un bon docteur.",
+  "Docteur, j'ai mal à la gorge ces derniers temps...",
 ];
 
 export const responses = [
@@ -192,4 +194,5 @@ export const responses = [
   "Les hommes en blanc vont bien s'occuper de toi...",
   "Tu m'dégoûte Kevin.",
   "Les calculs sont pas bons",
+  "Quand on joue au docteur il y a forcément une bite.",
 ];

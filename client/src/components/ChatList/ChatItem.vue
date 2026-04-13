@@ -13,7 +13,9 @@
     </div>
 
     <div v-if="!proposition && isRoundMaster" class="chat-footer mt-1">
-      <button class="btn btn-sm btn-error btn-outline">TAITOADON !</button>
+      <button class="btn btn-sm btn-error btn-outline" @click="onClick">
+        TAITOADON !
+      </button>
     </div>
   </div>
 </template>
@@ -32,5 +34,17 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  playerId: {
+    type: String,
+    default: () => "",
+  },
 });
+
+const emits = defineEmits<{
+  taitoa: [string];
+}>();
+
+function onClick() {
+  emits("taitoa", props.playerId);
+}
 </script>

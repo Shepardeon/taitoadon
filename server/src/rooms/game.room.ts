@@ -17,6 +17,7 @@ export class Player extends Schema {
 export class GameRoomState extends Schema {
   @type({ map: Player }) public players = new MapSchema<Player>();
   @type("string") public roundMasterId: string;
+  @type("string") public lastLooserId: string;
   @type("string") public proposition: string;
   @type("string") public roundState:
     | "waiting_for_players"
@@ -41,6 +42,7 @@ export class GameRoom extends Room {
       this.state.players.forEach((player) => {
         player.cards.clear();
         player.cards.push(...this.cardService.getRandomResponses(4));
+        player.lives = 3;
         player.isReady = false;
       });
 
@@ -81,6 +83,7 @@ export class GameRoom extends Room {
       looser.isReady = true;
 
       this.state.roundMasterId = looser.sessionId;
+      this.state.lastLooserId = looser.sessionId;
       this.state.proposition = this.cardService.getRandomProposition();
       this.state.roundState = "propose_phase";
     },

@@ -108,10 +108,6 @@ export const useRoomStore = defineStore("room", () => {
       $(player).cards.onAdd((card, index) => {
         players[id].cards.splice(index, 0, card);
       });
-
-      $(player).cards.onRemove((_, index) => {
-        players[id].cards.splice(index, 1);
-      });
     });
 
     $(room.value.state).players.onRemove((_, id) => {
@@ -121,24 +117,6 @@ export const useRoomStore = defineStore("room", () => {
     $(room.value.state).onChange(() => {
       state.value = serializeState(room.value?.state);
     });
-
-    // ex synchro valeur simple
-    // $(room.value.state).listen("roundState", (value, previous) => {
-    //   roundState.value = value;
-    // });
-
-    // ex synchro valeur complexe (objet)
-    // $(room.value.state).listen("roundState", (current) => {
-    //   if (!current) return;
-
-    //   // sync initial
-    //   Object.assign(roundState, serializeRound(current));
-
-    //   // écouter les changements internes
-    //   $(current).onChange(() => {
-    //     Object.assign(roundState, serializeRound(current));
-    //   });
-    // });
   }
 
   /**
@@ -160,6 +138,7 @@ export const useRoomStore = defineStore("room", () => {
     return {
       players: {}, // unused
       roundMasterId: state.roundMasterId,
+      lastLooserId: state.lastLooserId,
       proposition: state.proposition,
       roundState: state.roundState,
     };

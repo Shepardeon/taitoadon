@@ -11,6 +11,7 @@ export interface Player {
 export interface GameRoom {
   players: Record<string, Player>;
   roundMasterId: string;
+  lastLooserId: string;
   proposition: string;
   roundState: "waiting_for_players" | "propose_phase" | "choice_phase";
 }

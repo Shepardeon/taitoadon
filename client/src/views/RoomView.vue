@@ -8,6 +8,10 @@
 
     <div class="flex h-full w-full items-center justify-center">
       <div class="lg:max-w-200 w-full">
+        <div class="text-bold text-center mb-20 text-error" v-if="looser">
+          {{ looser }} est franchement pas drôle !
+        </div>
+
         <div class="text-xl text-bold text-center mb-5">
           <div v-if="isProposePhase">
             <span v-if="isRoundMaster">
@@ -22,10 +26,6 @@
             </span>
             <span v-else>Le chef du round choisi un message...</span>
           </div>
-        </div>
-
-        <div>
-          {{ room.state?.roundState }}
         </div>
 
         <div v-if="!isGameStarted" class="text-3xl text-bold">
@@ -45,6 +45,7 @@
               :proposition="room.state?.proposition ?? ''"
               :responses="playerResponses"
               :is-round-master="isRoundMaster"
+              @taitoa="onTaitoaClick"
             />
           </div>
         </div>
@@ -56,17 +57,10 @@
         <ResponseCard
           v-for="card in room.me?.cards"
           :card
-          :disable="isRoundMaster"
+          :disable="isRoundMaster || isResponseSelected"
           @choose="onChooseResponse"
         />
       </div>
-
-      <!-- 
-      <div>
-        <pre>
-        {{ room.players }}
-        </pre>
-      </div> -->
 
       <button
         v-if="isHost && !isGameStarted"
@@ -98,8 +92,7 @@ import ResponseCard from "../components/ResponseCard.vue";
 import ChatList from "../components/ChatList/ChatList.vue";
 import { useRoomStore } from "../stores/room.store";
 import { useRouter } from "vue-router";
-import { computed, onMounted } from "vue";
-import { PlayerResponse } from "../models/game.model";
+import { computed, onMounted, ref, watch } from "vue";
 
 const room = useRoomStore();
 const router$ = useRouter();
@@ -116,16 +109,39 @@ const isProposePhase = computed(
 );
 const isChoicePhase = computed(() => room.state?.roundState === "choice_phase");
 
+const looser = computed(() =>
+  room.state?.lastLooserId
+    ? room.players[room.state?.lastLooserId].name
+    : undefined,
+);
+
 const playerResponses = computed(() =>
   Object.values(room.players)
-    .map(
-      (player) =>
-        ({
-          playerId: player.sessionId,
-          response: player.response,
-        }) as PlayerResponse,
-    )
+    .map((player) => {
+      console.log(player.sessionId, player.response, player);
+
+      return {
+        playerId: player.sessionId,
+        response: player.response,
+      };
+    })
     .filter((r) => r.playerId !== room.state?.roundMasterId),
+);
+
+const isResponseSelected = ref(false);
+
+watch(
+  () => room.me?.cards.length,
+  (count) => {
+    if (count === 0 && isGameStarted.value) {
+      room.send("requestCards");
+    }
+  },
+);
+
+watch(
+  () => isProposePhase.value,
+  () => (isResponseSelected.value = false),
 );
 
 onMounted(() => {
@@ -144,7 +160,12 @@ function startGame() {
 }
 
 function onChooseResponse(response: string) {
+  isResponseSelected.value = true;
   room.send("respond", { response });
+}
+
+function onTaitoaClick(playerId: string) {
+  room.send("choose", { sessionId: playerId });
 }
 </script>
 

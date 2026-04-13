@@ -2,7 +2,13 @@
   <ul>
     <li>
       <ChatItem :content="proposition" proposition />
-      <ChatItem v-for="r in responses" :content="r.response" :is-round-master />
+      <ChatItem
+        v-for="r in responses"
+        :content="r.response"
+        :player-id="r.playerId"
+        :is-round-master
+        @taitoa="onTaitoa"
+      />
     </li>
   </ul>
 </template>
@@ -25,4 +31,12 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emits = defineEmits<{
+  taitoa: [string];
+}>();
+
+function onTaitoa(playerId: string) {
+  emits("taitoa", playerId);
+}
 </script>
