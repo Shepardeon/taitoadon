@@ -1,0 +1,42 @@
+services:
+  client:
+    build: ./client
+    container_name: client_app
+    volumes:
+      - client_dist:/app/dist
+  
+  server:
+    build: ./server
+    container_name: colyseus
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      - client
+      - server
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # frontend
+      - client_dist:/usr/share/nginx/html
+
+      # nginx
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
+      # certbot
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+
+volumes:
+  client_dist:
