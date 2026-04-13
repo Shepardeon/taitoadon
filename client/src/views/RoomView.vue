@@ -93,9 +93,11 @@ import ChatList from "../components/ChatList/ChatList.vue";
 import { useRoomStore } from "../stores/room.store";
 import { useRouter } from "vue-router";
 import { computed, onMounted, ref, watch } from "vue";
+import { useSpeech } from "../composables/speech.composable";
 
 const room = useRoomStore();
 const router$ = useRouter();
+const { cancelUtterance } = useSpeech();
 
 const isHost = computed(() => room.me?.isHost || false);
 const isRoundMaster = computed(
@@ -142,6 +144,15 @@ watch(
 watch(
   () => isProposePhase.value,
   () => (isResponseSelected.value = false),
+);
+
+watch(
+  () => isChoicePhase.value,
+  (newValue, oldValue) => {
+    if (!newValue && oldValue) {
+      cancelUtterance();
+    }
+  },
 );
 
 onMounted(() => {

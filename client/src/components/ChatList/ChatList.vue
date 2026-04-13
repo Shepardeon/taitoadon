@@ -3,7 +3,7 @@
     <li>
       <ChatItem :content="proposition" proposition />
       <ChatItem
-        v-for="r in responses"
+        v-for="r in internalResponses"
         :content="r.response"
         :player-id="r.playerId"
         :is-round-master
@@ -14,8 +14,17 @@
 </template>
 
 <script lang="ts" setup>
-import { PlayerResponse } from "../../models/game.model";
 import ChatItem from "./ChatItem.vue";
+import { onMounted, ref } from "vue";
+import { PlayerResponse } from "../../models/game.model";
+import { useSpeech } from "../../composables/speech.composable";
+
+const speech = useSpeech();
+const internalResponses = ref<PlayerResponse[]>([]);
+
+onMounted(() => {
+  speech.sayWithRandomVoice(props.proposition, sayNextLine);
+});
 
 const props = defineProps({
   isRoundMaster: {
@@ -38,5 +47,17 @@ const emits = defineEmits<{
 
 function onTaitoa(playerId: string) {
   emits("taitoa", playerId);
+  speech.cancelUtterance();
+}
+
+function sayNextLine() {
+  if (internalResponses.value.length === props.responses.length) {
+    return;
+  }
+
+  const nextLine = props.responses[internalResponses.value.length];
+  internalResponses.value.push(nextLine);
+
+  speech.sayWithRandomVoice(nextLine.response, sayNextLine);
 }
 </script>
