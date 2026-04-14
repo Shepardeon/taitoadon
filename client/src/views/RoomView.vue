@@ -128,7 +128,6 @@ const playerResponses = computed(() =>
         response: player.response,
       };
     })
-    .sort(() => 0.5 - Math.random())
     .filter((r) => r.playerId !== room.state?.roundMasterId),
 );
 
