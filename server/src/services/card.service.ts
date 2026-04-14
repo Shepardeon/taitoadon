@@ -1,15 +1,15 @@
 import { propositions, responses } from "../data/cards";
+import { Deck } from "../data/deck";
 
 export class CardServices {
-  propositons = propositions;
-  responses = responses;
+  private _propositons = new Deck(propositions);
+  private _responses = new Deck(responses);
 
   public getRandomProposition(): string {
-    return propositions[Math.floor(Math.random() * propositions.length)];
+    return this._propositons.draw(1)[0];
   }
 
   public getRandomResponses(n: number): Array<string> {
-    const shuffled = Array.from(responses).sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n);
+    return this._responses.draw(n);
   }
 }
