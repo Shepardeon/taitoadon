@@ -1,6 +1,9 @@
 <template>
   <li>
-    <div class="flex justify-between">
+    <div
+      class="flex justify-between my-1"
+      :class="{ 'bg-primary': player.isReady }"
+    >
       <div>
         <FontAwesomeIcon v-if="player.isHost" :icon="faCrown" />
         {{ player.name }}
