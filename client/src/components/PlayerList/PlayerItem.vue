@@ -8,7 +8,7 @@
       <div>
         <FontAwesomeIcon v-for="n in player.lives" :key="n" :icon="fasHeart" />
         <FontAwesomeIcon
-          v-for="n in 3 - player.lives"
+          v-for="n in 5 - player.lives"
           :key="n"
           :icon="farHeart"
         />

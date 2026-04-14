@@ -139,6 +139,7 @@ export const useRoomStore = defineStore("room", () => {
       players: {}, // unused
       roundMasterId: state.roundMasterId,
       lastLooserId: state.lastLooserId,
+      looserPhrase: state.looserPhrase,
       proposition: state.proposition,
       roundState: state.roundState,
     };

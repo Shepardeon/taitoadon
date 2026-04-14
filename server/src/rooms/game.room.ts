@@ -18,6 +18,7 @@ export class GameRoomState extends Schema {
   @type({ map: Player }) public players = new MapSchema<Player>();
   @type("string") public roundMasterId: string;
   @type("string") public lastLooserId: string;
+  @type("string") public looserPhrase: string;
   @type("string") public proposition: string;
   @type("string") public roundState:
     | "waiting_for_players"
@@ -37,13 +38,15 @@ export class GameRoom extends Room {
       try {
         if (this.state.roundState !== "waiting_for_players") return;
 
+        this.state.lastLooserId = "";
+        this.state.looserPhrase = "";
         this.state.proposition = this.cardService.getRandomProposition();
         this.state.roundState = "propose_phase";
 
         this.state.players.forEach((player) => {
           player.cards.clear();
           player.cards.push(...this.cardService.getRandomResponses(4));
-          player.lives = 3;
+          player.lives = 5;
           player.isReady = false;
         });
 
@@ -83,6 +86,9 @@ export class GameRoom extends Room {
         const looser = this.state.players.get(payload.sessionId);
         looser.lives--;
 
+        this.state.lastLooserId = looser.sessionId;
+        this.state.looserPhrase = `"${looser.response}"`;
+
         if (looser.lives <= 0) {
           this.state.roundState = "waiting_for_players";
           return;
@@ -92,7 +98,6 @@ export class GameRoom extends Room {
         looser.isReady = true;
 
         this.state.roundMasterId = looser.sessionId;
-        this.state.lastLooserId = looser.sessionId;
         this.state.proposition = this.cardService.getRandomProposition();
         this.state.roundState = "propose_phase";
       } catch (err) {
@@ -122,7 +127,7 @@ export class GameRoom extends Room {
     const player = new Player();
     player.sessionId = client.sessionId;
     player.name = options.username;
-    player.lives = 3;
+    player.lives = 5;
     player.isHost = this.state.players.size === 0;
 
     this.state.players.set(client.sessionId, player);

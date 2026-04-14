@@ -8,8 +8,11 @@
 
     <div class="flex h-full w-full items-center justify-center">
       <div class="lg:max-w-200 w-full">
-        <div class="text-bold text-center mb-20 text-error" v-if="looser">
-          {{ looser }} est franchement pas drôle !
+        <div class="text-bold text-center mb-10 text-error" v-if="looser">
+          <div>{{ looser }} est franchement pas drôle !</div>
+          <div>
+            {{ room.state?.looserPhrase }}
+          </div>
         </div>
 
         <div class="text-xl text-bold text-center mb-5">
@@ -120,13 +123,12 @@ const looser = computed(() =>
 const playerResponses = computed(() =>
   Object.values(room.players)
     .map((player) => {
-      console.log(player.sessionId, player.response, player);
-
       return {
         playerId: player.sessionId,
         response: player.response,
       };
     })
+    .sort(() => 0.5 - Math.random())
     .filter((r) => r.playerId !== room.state?.roundMasterId),
 );
 
